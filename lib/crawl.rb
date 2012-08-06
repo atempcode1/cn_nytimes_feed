@@ -1,5 +1,6 @@
 # -*- encoding : utf-8 -*-
 require 'anemone'
+require 'date'
 
 require File.expand_path("../../models/article_url", __FILE__)
 
@@ -40,13 +41,17 @@ class Crawl
         return true
       end
 
-      if url =~ /\/article\// && !ArticleUrl.has?(url)
+      if url =~ /\/article\// && valid_url_date(url) && !ArticleUrl.has?(url)
         ArticleUrl.create!(url: url)
         return true
       end
     end
 
     false
+  end
+
+  def self.valid_url_date(url)
+    ( Time.now.to_date - Date.parse(url[/\d{4}\/\d{2}\/\d{2}/]) ).to_i <= 7
   end
   
 end
