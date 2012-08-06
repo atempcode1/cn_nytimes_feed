@@ -3,55 +3,77 @@ require 'anemone'
 require 'date'
 
 require File.expand_path("../../models/article_url", __FILE__)
+require File.expand_path("../../models/article", __FILE__)
 
 class Crawl
   CHANNEL_URLS = []
 
-  def self.run
-    Anemone.crawl("http://cn.nytimes.com/") do |anemone|
-      anemone.focus_crawl do |page|
-        Crawl.filter_url(page.links)
-      end
+  class << self
+    def run
+      Anemone.crawl("http://cn.nytimes.com/") do |anemone|
+        anemone.focus_crawl do |page|
+          Crawl.filter_url(page.links)
+        end
 
-      # only article, ignore channel
-      anemone.on_pages_like(/\/article\//) do |page|
-        Crawl.process_article_page(page)
-      end
+        # only article, ignore channel
+        anemone.on_pages_like(/\/article\//) do |page|
+          Crawl.process_article_page(page)
+        end
 
-      anemone.after_crawl do |pages|
-        puts "OK: #{pages.uniq.size}"
+        anemone.after_crawl do |pages|
+          puts "OK: #{pages.uniq.size}"
+        end
       end
     end
-  end
 
-  def self.filter_url(urls)
-    urls.select do |url|
-      self.valid_url(url.to_s)
-    end
-  end
-
-  def self.process_article_page(page)
-    
-  end
-
-  def self.valid_url(url)
-    if url =~ /(?!.+\/en\/$)\/(article|section)\/.*/
-      if url =~ /\/section\// && !CHANNEL_URLS.include?(url)
-        CHANNEL_URLS << url
-        return true
+    def filter_url(urls)
+      urls.select do |url|
+        self.valid_url(url.to_s)
       end
+    end
+
+    def process_article_page(page)
+      article = extract_page_data(page.doc, page.url)
+      article.save
+      ArticleUrl.spidered!(article.url)
+    end
+
+    def valid_url(url)
+      if url =~ /(?!.+(\/en\/|zh-hk)$)\/(article|section)\/.*/
+        if url =~ /\/section\// && !CHANNEL_URLS.include?(url)
+          CHANNEL_URLS << url
+          return true
+        end
 
       if url =~ /\/article\// && valid_url_date(url) && !ArticleUrl.has?(url)
         ArticleUrl.create!(url: url)
         return true
       end
+      end
+
+      false
     end
 
-    false
+    def valid_url_date(url)
+      ( Time.now.to_date - Date.parse(url[/\d{4}\/\d{2}\/\d{2}/]) ).to_i <= 7
+    end
+
+    def extract_page_data(doc, url)
+      article = Article.new
+      article.title = doc.css('h3.articleHeadline').text
+      article.url = url.to_s
+      article.category = article.url.scan(/\/article\/(\w+)\//).flatten.first
+      article.published_at = Date.parse(article.url[/\d{4}\/\d{2}\/\d{2}/])
+      article.article_id = (doc.css('meta[name="article_id"]').first['content'].to_i rescue nil)
+
+      body = doc.css('#columnAB')
+      body.css('#articleTab').remove
+      body.css('h3.articleHeadline').remove
+      body.css('div.articleTool').remove
+      article.body = body.to_html
+      
+      article
+    end
   end
 
-  def self.valid_url_date(url)
-    ( Time.now.to_date - Date.parse(url[/\d{4}\/\d{2}\/\d{2}/]) ).to_i <= 7
-  end
-  
 end

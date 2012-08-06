@@ -11,4 +11,9 @@ class ArticleUrl
   def self.has?(url)
     self.where(url: url).exists?
   end
+
+  def self.spidered!(url)
+    article_url = self.where(url: url).first
+    article_url.update_attribute(:spidered, true) unless article_url.nil?
+  end
 end
