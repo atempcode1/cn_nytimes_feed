@@ -73,6 +73,7 @@ class Crawl
       body.css('#articleTab').remove
       body.css('h3.articleHeadline').remove
       body.css('div.articleTool').remove
+      body.css('div.articleRefer').remove
       article.body = body.to_html
       
       article
