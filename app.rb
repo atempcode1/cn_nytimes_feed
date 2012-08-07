@@ -19,7 +19,7 @@ get '/rss.xml' do
         xml.description "纽约时报中文网非官方Feed"
         xml.link "http://cn.nytimes.com/"
 
-        Article.order_by(created_at: :desc).limit(50).each do |article|
+        Article.order_by(published_at: :desc).limit(50).each do |article|
           xml.item do
             xml.title article.title
             xml.link article.url
