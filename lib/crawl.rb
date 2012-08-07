@@ -34,8 +34,10 @@ class Crawl
 
     def process_article_page(page)
       article = extract_page_data(page.doc, page.url)
-      article.save
-      ArticleUrl.spidered!(article.url)
+      unless article.nil?
+        article.save
+        ArticleUrl.spidered!(article.url)
+      end
     end
 
     def valid_url(url)
@@ -59,6 +61,7 @@ class Crawl
     end
 
     def extract_page_data(doc, url)
+      puts "start #{url}"
       article = Article.new
       article.title = doc.css('h3.articleHeadline').text
       article.url = url.to_s
@@ -73,6 +76,9 @@ class Crawl
       article.body = body.to_html
       
       article
+    rescue
+      puts "error #{url}"
+      nil
     end
   end
 

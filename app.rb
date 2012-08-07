@@ -6,12 +6,13 @@ require File.expand_path('../lib/database', __FILE__)
 require File.expand_path('../models/article', __FILE__)
 
 get '/' do
-  "Hello world, it's #{Time.now} at the server!"
+  "<a href='/rss.xml'>纽约时报中文网非官方Feed</a>"
 end
 
 get '/rss.xml' do
+  content_type 'application/rss+xml'
   builder do |xml|
-    xml.instruct! :xml, :version => '1.0'
+    xml.instruct! :xml, :version => '1.0', :encoding => 'UTF-8'
     xml.rss :version => "2.0" do
       xml.channel do
         xml.title "纽约时报中文网"
