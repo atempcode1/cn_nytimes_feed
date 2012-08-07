@@ -10,7 +10,7 @@ class Crawl
 
   class << self
     def run
-      Anemone.crawl("http://cn.nytimes.com/", :threads => 1, :delay => 0.1, :user_agent => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.57 Safari/537.1') do |anemone| #单线程,每采集一页面休息0.1秒
+      Anemone.crawl("http://cn.nytimes.com/", :threads => 1, :delay => 3, :user_agent => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.57 Safari/537.1') do |anemone| #单线程,每采集一页面休息3秒
         anemone.focus_crawl do |page|
           Crawl.filter_url(page.links)
         end
