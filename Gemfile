@@ -13,4 +13,5 @@ group :development, :test do
   gem "webmock", "~> 1.8.8"
 end
 
-gem 'capistrano'
+gem "whenever", "~> 0.7.3"
+gem "capistrano", "~> 2.12.0"
