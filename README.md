@@ -1,6 +1,6 @@
 纽约时报中文网非官方Feed
 ===
-抓取[纽约时报中文网](http://cn.nytimes.com/),提供RSS订阅输出
+抓取[纽约时报中文网](http://cn.nytimes.com/),提供[RSS订阅](http://cn_nytimes_feed.lvcake.com/rss.xml)输出
 
 主要技术
 ---
