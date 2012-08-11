@@ -1,3 +1,4 @@
+set :output, "$PENG_PATH/log/cron.log"
 every 3.hours do
-  command "bash -l -c 'cd $PENG_PATH && ruby script/spider.rb >> log/cron.log'"
+    command "cd $PENG_PATH && ruby script/spider.rb"
 end
