@@ -15,3 +15,5 @@ end
 
 gem "whenever", "~> 0.7.3"
 gem "capistrano", "~> 2.12.0"
+
+gem "nokogiri", ">= 1.10.4"
